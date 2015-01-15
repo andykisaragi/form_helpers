@@ -1,0 +1,91 @@
+<?php
+
+function form_helpers_node_options($where = array()){
+
+  $query = db_select('node', 'n')
+    ->fields('n',array('nid','title'));
+
+  foreach ($where as $field => $value){
+    $query->condition($field, $value,'=');
+  }
+    
+  $result = $query->execute()->fetchAllAssoc('nid');
+
+  $options = array('0' => 'none');
+  foreach($result as $nid => $row){
+    $options[$nid] = $row->title;      
+  }  
+
+  return $options;
+
+}
+
+function form_helpers_node_type_options(){
+
+  $options = array(0 => 'none');
+  $types = node_type_get_types();
+  foreach($types as $machine_name => $type){
+    $options[$machine_name] = $type->name;
+  }
+  return $options;
+
+}
+
+function form_helpers_vocab_options(){
+  $result = db_query("SELECT vid, name FROM {taxonomy_vocabulary}")->fetchAllAssoc('vid');  
+  $vocabs = array(0 => 'none');
+  foreach ($result as $vid => $row) {
+    $vocabs[$vid] = $row->name;
+  }
+  return $vocabs;
+}
+
+function form_helpers_term_options(){
+
+
+
+}
+
+function form_helpers_get_field_options($entity_type, $bundle_name, $type = null){
+
+  $type = $type ? " AND fc.type='$type'" : "";
+
+  $fields = db_query("SELECT DISTINCT fi.field_name FROM {field_config_instance} fi LEFT JOIN {field_config} fc ON fi.field_id = fc.id WHERE fi.entity_type = ? AND fi.bundle=?" . $type,array($entity_type, $bundle_name))->fetchAllAssoc('field_name');
+
+  $options = array(0 => 'none');
+  foreach($fields as $key => $field){
+    $options[$key] = $key;
+  }
+  return $options;
+}
+
+
+
+function form_helpers_get_image_style_options(){
+  $image_styles = image_styles();
+  foreach ($image_styles as $style => $data){
+    $image_styles[$style] = $data['label'];
+  }
+  return $image_styles;
+}
+
+
+/*
+function mytime_utilities_term_select($category,$title = null){
+  $options = array('0' => 'All ' . $category['name']);
+  foreach ($category['#options'] as $term){
+    $term = (array)$term;
+    $options[$term['tid']] = $term['name'];
+  }
+  return array(
+    '#title' => $title ? t($title) : '',
+    '#description' => '',
+    '#type' => 'select',
+    '#options' => $options,
+    '#default_value' => array(0),
+  );
+
+}
+
+*/
+

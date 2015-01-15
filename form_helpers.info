@@ -1,0 +1,4 @@
+name = Form Helpers
+description = Some functions to provide commonly used (by me anyway) bits of forms
+core = 7.x
+version = 1.0
