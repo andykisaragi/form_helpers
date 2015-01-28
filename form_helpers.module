@@ -48,8 +48,17 @@ function form_helpers_term_options(){
 
 function form_helpers_get_field_options($entity_type, $bundle_name, $type = null){
 
-  $type = $type ? " AND fc.type='$type'" : "";
+  if(is_array($type)){
 
+    $types = "'" . implode("','",$type) . "'";
+
+    $type = " AND fc.type IN ($types)";
+
+  }else{
+
+    $type = $type ? " AND fc.type='$type'" : "";
+
+  }
   $fields = db_query("SELECT DISTINCT fi.field_name FROM {field_config_instance} fi LEFT JOIN {field_config} fc ON fi.field_id = fc.id WHERE fi.entity_type = ? AND fi.bundle=?" . $type,array($entity_type, $bundle_name))->fetchAllAssoc('field_name');
 
   $options = array(0 => 'none');
